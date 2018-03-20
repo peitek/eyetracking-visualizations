@@ -2,12 +2,16 @@ import matplotlib.pyplot as plt
 import pandas as pd
 import seaborn as sns
 from scipy import stats
+from os import path
+
+INPUT_PATH = 'input/'
+OUTPUT_PATH = 'output/'
 
 
 def draw_eyetrack_spatial_error_plot(input_file, output_file):
     global eyetrack
     # Load the long-form example gammas dataset
-    eyetrack = pd.read_csv(input_file, sep=';')
+    eyetrack = pd.read_csv(path.join(INPUT_PATH, input_file), sep=';')
     sns.set_style("whitegrid")
     colors = sns.color_palette("BrBG", 7)
     f, ax = plt.subplots(figsize=(8, 3))
@@ -52,4 +56,4 @@ def draw_eyetrack_spatial_error_plot(input_file, output_file):
 
     # save output as file, in a high resolution
     fig = eyetrack_tsplot.get_figure()
-    fig.savefig(output_file, dpi=300, transparent=False)
+    fig.savefig(path.join(OUTPUT_PATH, output_file), dpi=300, transparent=False)
