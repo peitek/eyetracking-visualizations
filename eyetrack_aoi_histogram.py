@@ -25,8 +25,8 @@ def draw_plot(input_file, output_file):
     plt.plot(x, x + 25, linestyle='--', color=colors[0])
     plt.plot(x, x - 25, linestyle='--', color=colors[0])
 
-    plt.plot(x, x + 50, linestyle=':', color=colors[-1])
-    plt.plot(x, x - 50, linestyle=':', color=colors[-1])
+    plt.plot(x, x + 40, linestyle=':', color=colors[-1])
+    plt.plot(x, x - 40, linestyle=':', color=colors[-1])
 
     ax.set(xlabel="Percentage of Fixations", ylabel="Vertical Distance from Center of Task Identifier")
 

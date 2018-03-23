@@ -6,15 +6,15 @@ import eyetrack_aoi_participant_count
 import eyetrack_aoi_histogram
 import response_times_condition_boxplot as response_times
 
-
-eyetrack_aoi_histogram.draw_plot('aoi_histogram_count.csv', 'eyetrack_aoi_histogram_count.png')
-eyetrack_aoi_histogram.draw_plot('aoi_histogram_time.csv', 'eyetrack_aoi_histogram_time.png')
+et_aoi_task_count.draw_eyetrack_spatial_error_plot('aoi_task_comprehension_time_count.csv', 'eyetrack_aoi_task_python_count.png')
+eyetrack_aoi_task_count_bar.draw_eyetrack_spatial_error_plot('aoi_task_comprehension_count_bar.csv', 'eyetrack_aoi_task_python_count_bar.png')
+eyetrack_aoi_participant_count.draw_eyetrack_spatial_error_plot('aoi_task_participant_count.csv', 'eyetrack_aoi_participant_python_count.png')
 
 if False:
     # AOI Analysis
-    et_aoi_task_count.draw_eyetrack_spatial_error_plot('aoi_task_comprehension_time_count.csv', 'eyetrack_aoi_task_python_count.png')
-    eyetrack_aoi_task_count_bar.draw_eyetrack_spatial_error_plot('aoi_task_comprehension_count_bar.csv', 'eyetrack_aoi_task_python_count_bar.png')
-    eyetrack_aoi_participant_count.draw_eyetrack_spatial_error_plot('aoi_task_participant_count.csv', 'eyetrack_aoi_participant_python_count.png')
+    eyetrack_aoi_histogram.draw_plot('aoi_histogram_count.csv', 'eyetrack_aoi_histogram_count.png')
+    eyetrack_aoi_histogram.draw_plot('aoi_histogram_time.csv', 'eyetrack_aoi_histogram_time.png')
+
 
     # Response Time
     response_times.draw_response_times_plot('ResponseTimeExport.csv', 'response_times.png')

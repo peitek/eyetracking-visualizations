@@ -26,7 +26,7 @@ def draw_eyetrack_spatial_error_plot(input_file, output_file):
     # Add a legend and informative axis label
     ax.legend(loc="upper left")
 
-    ax.set(ylim=(0), xlabel="Subjects", ylabel="Fixation Count in AOIs around Task Identifier")
+    ax.set(ylim=(0), xlabel="Participants", ylabel="Fixation Count in AOIs around Task Identifier")
 
     sns.despine(left=True, bottom=True)
     plt.tight_layout()

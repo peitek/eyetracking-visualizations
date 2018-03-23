@@ -1,0 +1,21 @@
+snippet;aoi_inner;aoi_25px;aoi_50px;subject
+arrayAverage (B);16968.0;34305.0;38601.0;average
+BinaryToDecimal;2821.0;10807.0;16464.0;average
+containsSubstring (NB);6780.0;14753.0;19388.0;average
+reverseWord;3992.0;5665.0;10460.0;average
+power (B);5378.0;11105.0;14040.0;average
+Factorial;2807.0;6589.0;7338.0;average
+countSameChars (NB);18569.0;30683.0;41147.0;average
+crossSum;7088.0;9394.0;11025.0;average
+firstAboveTreshold (B);9939.0;13455.0;16175.0;average
+CountVowels;5829.0;9392.0;9513.0;average
+arrayAverage (NB);15383.0;21130.0;21702.0;average
+sumUp;7677.0;11247.0;13027.0;average
+containsSubstring (B);16007.0;19836.0;22052.0;average
+Maximum;6793.0;13714.0;15978.0;average
+power;6218.0;10176.0;11845.0;average
+isPalindrome;7215.0;11646.0;12602.0;average
+countSameChars (B);9894.0;19772.0;24737.0;average
+IntertwineTwoWords;3803.0;6806.0;8603.0;average
+firstAboveTreshold (NB);7829.0;11873.0;12750.0;average
+squareRoots;4541.0;9677.0;11348.0;average
