@@ -8,7 +8,7 @@ INPUT_PATH = 'input/'
 OUTPUT_PATH = 'output/'
 
 
-def draw_eyetrack_spatial_error_plot(input_file, output_file):
+def draw_plot(input_file, output_file):
     global eyetrack
     # Load the long-form example gammas dataset
     eyetrack = pd.read_csv(path.join(INPUT_PATH, input_file), sep=';')

@@ -15,7 +15,7 @@ def printColor(param):
 
 
 
-def draw_eyetrack_spatial_error_plot(input_file, output_file):
+def draw_plot(input_file, output_file):
     # Initialize the matplotlib figure
     sns.set_style("whitegrid")
     f, ax = plt.subplots(figsize=(8, 6))
