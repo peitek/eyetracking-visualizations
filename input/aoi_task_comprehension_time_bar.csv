@@ -1,21 +1,21 @@
 snippet;aoi_inner;aoi_25px;aoi_50px;subject
-arrayAverage (B);16968.0;34305.0;38601.0;average
-BinaryToDecimal;2821.0;10807.0;16464.0;average
-containsSubstring (NB);6780.0;14753.0;19388.0;average
-reverseWord;3992.0;5665.0;10460.0;average
-power (B);5378.0;11105.0;14040.0;average
-Factorial;2807.0;6589.0;7338.0;average
-countSameChars (NB);18569.0;30683.0;41147.0;average
-crossSum;7088.0;9394.0;11025.0;average
-firstAboveTreshold (B);9939.0;13455.0;16175.0;average
-CountVowels;5829.0;9392.0;9513.0;average
-arrayAverage (NB);15383.0;21130.0;21702.0;average
-sumUp;7677.0;11247.0;13027.0;average
-containsSubstring (B);16007.0;19836.0;22052.0;average
-Maximum;6793.0;13714.0;15978.0;average
-power;6218.0;10176.0;11845.0;average
-isPalindrome;7215.0;11646.0;12602.0;average
-countSameChars (B);9894.0;19772.0;24737.0;average
-IntertwineTwoWords;3803.0;6806.0;8603.0;average
-firstAboveTreshold (NB);7829.0;11873.0;12750.0;average
-squareRoots;4541.0;9677.0;11348.0;average
+arrayAverage (B);21390.0;43076.0;51242.0;average
+BinaryToDecimal;6570.0;16772.0;24638.0;average
+containsSubstring (NB);7635.0;16860.0;22351.0;average
+reverseWord;6856.0;10105.0;15970.0;average
+power (B);8986.0;15531.0;19136.0;average
+Factorial;3027.0;8827.0;10614.0;average
+countSameChars (NB);24549.0;41690.0;52710.0;average
+crossSum;9958.0;14673.0;16304.0;average
+firstAboveTreshold (B);15035.0;21951.0;26186.0;average
+CountVowels;6953.0;14279.0;14683.0;average
+arrayAverage (NB);18116.0;26190.0;28766.0;average
+sumUp;7967.0;13853.0;15633.0;average
+containsSubstring (B);18333.0;23432.0;25648.0;average
+Maximum;8100.0;18177.0;20732.0;average
+power;9152.0;16455.0;20190.0;average
+isPalindrome;10786.0;16990.0;18782.0;average
+countSameChars (B);13493.0;26512.0;33373.0;average
+IntertwineTwoWords;7022.0;12652.0;15007.0;average
+firstAboveTreshold (NB);9372.0;15607.0;17060.0;average
+squareRoots;8211.0;14861.0;17024.0;average

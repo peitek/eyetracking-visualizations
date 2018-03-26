@@ -1,21 +1,21 @@
 snippet;aoi_inner;aoi_25px;aoi_50px;subject
-arrayAverage (B);101;196;226;average
-BinaryToDecimal;14;48;79;average
-containsSubstring (NB);35;77;108;average
-reverseWord;18;29;55;average
-power (B);23;63;82;average
-Factorial;18;45;55;average
-countSameChars (NB);105;185;241;average
-crossSum;34;49;62;average
-firstAboveTreshold (B);56;71;94;average
-CountVowels;36;56;58;average
-arrayAverage (NB);69;112;120;average
-sumUp;55;79;90;average
-containsSubstring (B);74;105;119;average
-Maximum;35;83;109;average
-power;41;70;86;average
-isPalindrome;38;57;65;average
-countSameChars (B);82;157;200;average
-IntertwineTwoWords;30;53;69;average
-firstAboveTreshold (NB);44;78;87;average
-squareRoots;32;60;70;average
+arrayAverage (B);129;249;318;average
+BinaryToDecimal;30;71;107;average
+containsSubstring (NB);39;88;125;average
+reverseWord;36;56;89;average
+power (B);46;93;115;average
+Factorial;20;49;62;average
+countSameChars (NB);140;242;303;average
+crossSum;50;83;96;average
+firstAboveTreshold (B);91;124;152;average
+CountVowels;44;77;82;average
+arrayAverage (NB);83;137;157;average
+sumUp;60;89;100;average
+containsSubstring (B);88;126;140;average
+Maximum;48;113;140;average
+power;50;92;116;average
+isPalindrome;61;92;107;average
+countSameChars (B);102;196;249;average
+IntertwineTwoWords;47;82;102;average
+firstAboveTreshold (NB);50;96;108;average
+squareRoots;52;89;104;average
