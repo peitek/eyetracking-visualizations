@@ -35,7 +35,7 @@ def draw_eyetrack_spatial_error_plot(input_file, output_file):
     }
 
     # Plot the response with standard error
-    eyetrack_tsplot = sns.tsplot(data=eyetrack, time="time", unit="subject", condition="axis", value="value", color=color_map)
+    eyetrack_tsplot = sns.tsplot(data=eyetrack, time="time", unit="subject", condition="axis", value="value", ci="sd", color=color_map)
     # eyetrack_tsplot = sns.regplot(data=eyetrack, time="time", unit="subject", condition="axis", value="value")
 
     # customization in design
