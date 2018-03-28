@@ -4,8 +4,13 @@ import eyetrack_aoi_task_count as et_aoi_task_count
 import eyetrack_spatial_error_time as et_spat_err
 import eyetrack_aoi_participant_count
 import eyetrack_aoi_histogram
+import eyetrack_pupil_dilation
 import response_times_condition_boxplot as response_times
 
+# TODO you can also change the output to PDF or SVG!
+
+#eyetrack_pupil_dilation.draw_timeline_over_time_all_participants('pupil_dilation_time_sec.csv', 'eyetrack_pupil_dilation_time_sec.png')
+eyetrack_pupil_dilation.draw_timeline_per_conditions('pupil_dilation_condition.csv', 'eyetrack_pupil_dilation_condition.png')
 
 if False:
     # AOI Analysis
