@@ -12,9 +12,10 @@ import response_times_condition_boxplot as response_times
 # Pupil dilation
 #eyetrack_pupil_dilation.draw_timeline_over_time_all_participants('pupil_dilation_time_sec.csv', 'eyetrack_pupil_dilation_time_sec.png')
 
-#eyetrack_pupil_dilation.draw_timeline_per_conditions('pupil_dilation_condition.csv', 'eyetrack_pupil_dilation_condition')
-#eyetrack_pupil_dilation.draw_timeline_per_conditions('pupil_dilation_condition.csv', 'eyetrack_pupil_dilation_condition', "bo23")
-#eyetrack_pupil_dilation.draw_timeline_per_conditions('pupil_dilation_condition.csv', 'eyetrack_pupil_dilation_condition', "ea65")
+#eyetrack_pupil_dilation.draw_timeline_per_conditions('pupil_dilation_condition.csv', 'eyetrack_pupil_dilation_condition_filtered', True)
+#eyetrack_pupil_dilation.draw_timeline_per_conditions('pupil_dilation_condition.csv', 'eyetrack_pupil_dilation_condition', False)
+#eyetrack_pupil_dilation.draw_timeline_per_conditions('pupil_dilation_condition.csv', 'eyetrack_pupil_dilation_condition', False, "bo23")
+#eyetrack_pupil_dilation.draw_timeline_per_conditions('pupil_dilation_condition.csv', 'eyetrack_pupil_dilation_condition', False, "ea65")
 
 #eyetrack_pupil_dilation.draw_timeline_per_snippet('pupil_dilation_snippet.csv', 'eyetrack_pupil_dilation_snippet', 'Compr_BU')
 #eyetrack_pupil_dilation.draw_timeline_per_snippet('pupil_dilation_snippet.csv', 'eyetrack_pupil_dilation_snippet', 'Compr_TD_B')
@@ -23,16 +24,22 @@ import response_times_condition_boxplot as response_times
 #eyetrack_pupil_dilation.draw_timeline_per_snippet_brightness('pupil_dilation_snippet.csv', 'eyetrack_pupil_dilation_snippet_brightness_complete', False)
 #eyetrack_pupil_dilation.draw_timeline_per_snippet_brightness('pupil_dilation_snippet.csv', 'eyetrack_pupil_dilation_snippet_brightness_compr', True)
 
+#eyetrack_pupil_dilation.draw_timeline_per_snippet_brightness('pupil_dilation_snippet.csv', 'eyetrack_pupil_dilation_snippet_brightness_compr_sum', True, True)
+
 #eyetrack_pupil_dilation.draw_timeline_per_snippet_compare('pupil_dilation_snippet.csv', 'eyetrack_pupil_dilation_snippet_compare_arrayavg', 'arrayAverageTD_B.png', 'beebtBurebzrTD_N.png')
 #eyetrack_pupil_dilation.draw_timeline_per_snippet_compare('pupil_dilation_snippet.csv', 'eyetrack_pupil_dilation_snippet_compare_power', 'powerTD_B.png', 'buycpTD_N.png')
 #eyetrack_pupil_dilation.draw_timeline_per_snippet_compare('pupil_dilation_snippet.csv', 'eyetrack_pupil_dilation_snippet_compare_substring', 'containsSubstringTD_B.png', 'ecnzaqnkKopkzvqnmTD_N.png')
 #eyetrack_pupil_dilation.draw_timeline_per_snippet_compare('pupil_dilation_snippet.csv', 'eyetrack_pupil_dilation_snippet_compare_commonchrs', 'countSameCharsAtSamePositionTD_B.png', 'ecoamKayiEoaikAmKayiEckqmqcaTD_N.png')
 #eyetrack_pupil_dilation.draw_timeline_per_snippet_compare('pupil_dilation_snippet.csv', 'eyetrack_pupil_dilation_snippet_compare_threshold', 'firstAboveTresholdTD_B.png', 'vsjihAzmfwHjwitmpxTD_N.png')
 
-eyetrack_pupil_dilation.draw_timeline_over_time_all_participants('pupil_dilation_gaze_pos_time_sec.csv', 'eyetrack_pupil_dilation_time_sec', True, "bo23")
-eyetrack_pupil_dilation.draw_timeline_over_time_all_participants('pupil_dilation_gaze_pos_time_sec.csv', 'eyetrack_pupil_dilation_time_sec', True, "ea65")
-eyetrack_pupil_dilation.draw_timeline_over_time_all_participants('pupil_dilation_gaze_pos_time_sec.csv', 'eyetrack_pupil_dilation_time_sec', True, "ks01")
-eyetrack_pupil_dilation.draw_timeline_over_time_all_participants('pupil_dilation_gaze_pos_time_sec.csv', 'eyetrack_pupil_dilation_time_sec', True, "zp65")
+#eyetrack_pupil_dilation.draw_timeline_over_time_all_participants('pupil_dilation_gaze_pos_time_sec.csv', 'eyetrack_pupil_dilation_time_sec', True, "bo23")
+#eyetrack_pupil_dilation.draw_timeline_over_time_all_participants('pupil_dilation_gaze_pos_time_sec.csv', 'eyetrack_pupil_dilation_time_sec', True, "ea65")
+#eyetrack_pupil_dilation.draw_timeline_over_time_all_participants('pupil_dilation_gaze_pos_time_sec.csv', 'eyetrack_pupil_dilation_time_sec', True, "ks01")
+#eyetrack_pupil_dilation.draw_timeline_over_time_all_participants('pupil_dilation_gaze_pos_time_sec.csv', 'eyetrack_pupil_dilation_time_sec', True, "zp65")
+
+#eyetrack_pupil_dilation.draw_timeline_over_time_all_participants('pupil_dilation_gaze_pos_time_sec.csv', 'eyetrack_pupil_dilation_time_sec', True, "ks01", True)
+
+eyetrack_pupil_dilation.draw_corrected_timeline_over_time_all_participants('pupil_dilation_gaze_pos_time_sec.csv', 'eyetrack_pupil_dilation_time_sec', True, "ks01", True)
 
 if False:
     # AOI Analysis

@@ -5,6 +5,7 @@ import numpy as np
 from scipy import stats, random, math
 from os import path
 from PIL import Image
+import statsmodels.api as sm
 
 import luminosity
 
@@ -13,17 +14,25 @@ INPUT_PATH = 'C:/Users/npeitek/Documents/GitHub/EyeLinkOgamaConnector/output/'
 OUTPUT_PATH = 'output/'
 
 
-def draw_timeline_over_time_all_participants(input_file, output_file, with_gaze=False, select_participant=None):
+def draw_timeline_over_time_all_participants(input_file, output_file, with_gaze=False, select_participant=None, limited=False):
     global eyetrack
     # Load the long-form example gammas dataset
     eyetrack = pd.read_csv(path.join(INPUT_PATH, input_file), sep=';')
     sns.set_style("whitegrid")
     colors = sns.color_palette("BrBG", 7)
-    f, ax = plt.subplots(figsize=(80, 6))
+
+    if limited:
+        f, ax = plt.subplots(figsize=(10, 3))
+    else:
+        f, ax = plt.subplots(figsize=(80, 6))
+
     ax.xaxis.grid(False)
 
     if with_gaze:
         output_file += '_gaze'
+
+    if limited:
+        output_file += '_lim'
 
     if select_participant is not None:
         eyetrack = eyetrack[eyetrack["subject"] == select_participant]
@@ -31,24 +40,37 @@ def draw_timeline_over_time_all_participants(input_file, output_file, with_gaze=
     else:
         output_file += '.png'
 
-    eyetrack_tsplot = sns.tsplot(data=eyetrack, time="time", unit="subject", value="pupil_dilation", color=colors[0])
+    if limited:
+        eyetrack = eyetrack[:650]
+
+    eyetrack_tsplot = sns.tsplot(data=eyetrack, time="time", unit="subject", value="pupil_dilation", color=colors[0], legend=True)
 
     if with_gaze:
         eyetrack_tsplot = sns.tsplot(data=eyetrack, time="time", unit="subject", value="gaze_x", color=colors[-1])
         eyetrack_tsplot = sns.tsplot(data=eyetrack, time="time", unit="subject", value="gaze_y", color=colors[-2])
 
+        import eyetrack_aoi_task_count_bar
+        eyetrack_aoi_task_count_bar.printColor(colors[0])
+        eyetrack_aoi_task_count_bar.printColor(colors[-1])
+        eyetrack_aoi_task_count_bar.printColor(colors[-2])
+
     xpos = 0
+    if limited:
+        ypos = 2300
+    else:
+        ypos = 0
+
     for i in range(25):
         xpos += 320.05
-        plt.text(xpos-300, 0, 'Comprehension', fontsize=14)
+        plt.text(xpos-300, ypos, 'Comprehension', fontsize=14)
         plt.axvline(x=xpos, color=colors[2])
 
         xpos += 150.05
-        plt.text(xpos - 130, 0, 'D2', fontsize=14)
+        plt.text(xpos - 130, ypos, 'D2', fontsize=14)
         plt.axvline(x=xpos, color=colors[2])
 
         xpos += 200.05
-        plt.text(xpos - 180, 0, 'Rest', fontsize=14)
+        plt.text(xpos - 180, ypos, 'Rest', fontsize=14)
         plt.axvline(x=xpos, color=colors[2])
 
     eyetrack_tsplot.set(xlabel='Time in 10th of second')
@@ -63,8 +85,94 @@ def draw_timeline_over_time_all_participants(input_file, output_file, with_gaze=
     fig.savefig(path.join(OUTPUT_PATH, output_file), dpi=300, transparent=False)
 
 
-def draw_timeline_per_conditions(input_file, output_file, participant=None):
+def get_corrected_pupil_dilation(row):
+    pupil_dilation = row['pupil_dilation']
+    gaze_x = row['gaze_x']
+    gaze_y = row['gaze_y']
+
+    pupil_dilation_corrected = pupil_dilation - 0.721 - (-0.187*gaze_x) - (0.249*gaze_y)
+    return pupil_dilation_corrected
+
+
+def draw_corrected_timeline_over_time_all_participants(input_file, output_file, with_gaze=False, select_participant=None, limited=False):
     global eyetrack
+    # Load the long-form example gammas dataset
+    eyetrack = pd.read_csv(path.join(INPUT_PATH, input_file), sep=';')
+    sns.set_style("whitegrid")
+    colors = sns.color_palette("BrBG", 7)
+
+    if limited:
+        f, ax = plt.subplots(figsize=(10, 3))
+    else:
+        f, ax = plt.subplots(figsize=(80, 6))
+
+    ax.xaxis.grid(False)
+
+    if with_gaze:
+        output_file += '_gaze'
+
+    if limited:
+        output_file += '_lim'
+
+    if select_participant is not None:
+        eyetrack = eyetrack[eyetrack["subject"] == select_participant]
+        output_file += '_' + select_participant + '.png'
+    else:
+        output_file += '.png'
+
+    if limited:
+        eyetrack = eyetrack[:650]
+
+    eyetrack['pupil_dilation'] = (eyetrack['pupil_dilation'] - eyetrack['pupil_dilation'].mean()) / eyetrack['pupil_dilation'].std()
+    eyetrack['gaze_x'] = (eyetrack['gaze_x'] - eyetrack['gaze_x'].mean()) / eyetrack['gaze_x'].std()
+    eyetrack['gaze_y'] = (eyetrack['gaze_y'] - eyetrack['gaze_y'].mean()) / eyetrack['gaze_y'].std()
+    eyetrack['pupil_dilation_corrected'] = eyetrack.apply(lambda row: get_corrected_pupil_dilation(row), axis=1)
+
+    eyetrack_tsplot = sns.tsplot(data=eyetrack, time="time", unit="subject", value="pupil_dilation", color=colors[0], legend=True)
+    eyetrack_tsplot = sns.tsplot(data=eyetrack, time="time", unit="subject", value="pupil_dilation_corrected", color=colors[1], legend=True)
+
+    if False and with_gaze:
+        eyetrack_tsplot = sns.tsplot(data=eyetrack, time="time", unit="subject", value="gaze_x", color=colors[-1])
+        eyetrack_tsplot = sns.tsplot(data=eyetrack, time="time", unit="subject", value="gaze_y", color=colors[-2])
+
+        import eyetrack_aoi_task_count_bar
+        eyetrack_aoi_task_count_bar.printColor(colors[0])
+        eyetrack_aoi_task_count_bar.printColor(colors[1])
+        eyetrack_aoi_task_count_bar.printColor(colors[-1])
+        eyetrack_aoi_task_count_bar.printColor(colors[-2])
+
+    xpos = 0
+    if limited:
+        ypos = 2300
+    else:
+        ypos = 0
+
+    for i in range(25):
+        xpos += 320.05
+        plt.text(xpos-300, ypos, 'Comprehension', fontsize=14)
+        plt.axvline(x=xpos, color=colors[2])
+
+        xpos += 150.05
+        plt.text(xpos - 130, ypos, 'D2', fontsize=14)
+        plt.axvline(x=xpos, color=colors[2])
+
+        xpos += 200.05
+        plt.text(xpos - 180, ypos, 'Rest', fontsize=14)
+        plt.axvline(x=xpos, color=colors[2])
+
+    eyetrack_tsplot.set(xlabel='Time in 10th of second')
+    eyetrack_tsplot.set(ylabel='Normalized Pupil Dilation')
+
+    # remove lines around graph
+    sns.despine(trim=True)
+    plt.tight_layout()
+
+    # save output as file, in a high resolution
+    fig = eyetrack_tsplot.get_figure()
+    fig.savefig(path.join(OUTPUT_PATH, output_file), dpi=300, transparent=False)
+
+
+def draw_timeline_per_conditions(input_file, output_file, filter=False, participant=None):
     # Load the long-form example gammas dataset
     eyetrack = pd.read_csv(path.join(INPUT_PATH, input_file), sep=';')
     sns.set_style("whitegrid")
@@ -72,16 +180,22 @@ def draw_timeline_per_conditions(input_file, output_file, participant=None):
     f, ax = plt.subplots(figsize=(10, 6))
     ax.xaxis.grid(False)
 
+    if filter:
+        eyetrack = eyetrack[eyetrack["condition"].isin(["Compr_BU", "Compr_TD_B", "Compr_TD_N", "Compr_TD_U", "Syntax", "Rest"])]
+        eyetrack['condition'] = eyetrack['condition'].replace({'Compr_BU': 'Bottom-up', 'Compr_TD_B': 'Top-Down (Beacon)', 'Compr_TD_U': 'Top-Down (Untrained)', 'Compr_TD_N': 'Top-Down (No Beacon)'})
+
+    eyetrack = eyetrack.rename(columns={'condition': 'Task Condition'})
+
     if participant is not None:
         eyetrack = eyetrack[eyetrack["subject"] == participant]
         output_file += '_' + participant + '.png'
     else:
         output_file += '.png'
 
-    eyetrack_tsplot = sns.tsplot(data=eyetrack, time="time", unit="subject", condition="condition", value="pupil_dilation", err_style=None)
+    eyetrack_tsplot = sns.tsplot(data=eyetrack, time="time", unit="subject", condition="Task Condition", value="pupil_dilation", err_style=None)
 
-    #eyetrack_tsplot.set(xlabel='Time in 10th of second')
-    #eyetrack_tsplot.set(ylabel='Pupil Dilation as area')
+    eyetrack_tsplot.set(xlabel='Time in 10th of Second within Each Condition')
+    eyetrack_tsplot.set(ylabel='Pupil Dilation Area (Arbitrary Unit)')
 
     # remove lines around graph
     sns.despine(trim=True)
@@ -142,7 +256,7 @@ def draw_timeline_per_snippet_compare(input_file, output_file, snippet1, snippet
     fig.savefig(path.join(OUTPUT_PATH, output_file), dpi=300, transparent=False)
 
 
-def get_brightness(row):
+def get_brightness(row, quick_and_dirty=False):
     snippet = row['snippet']
 
     if 'DecTime' in snippet:
@@ -157,7 +271,9 @@ def get_brightness(row):
         snippet = snippet.replace('Rest', 'rest_')
         snippet += '.png'
 
-    #return calculate_brightness(path.join(IMAGE_PATH, snippet))
+    if quick_and_dirty:
+        return calculate_brightness(path.join(IMAGE_PATH, snippet))
+
     brightness = luminosity.get_brightness(path.join(IMAGE_PATH, snippet))
     print(snippet + " has a brightness of " + str(brightness))
     return brightness
@@ -177,7 +293,7 @@ def calculate_brightness(image_path):
     return 1 if brightness == 255 else (brightness / scale) * 10
 
 
-def draw_timeline_per_snippet_brightness(input_file, output_file, only_comprehension=False):
+def draw_timeline_per_snippet_brightness(input_file, output_file, only_comprehension=False, sum_comprehension=False):
     # Load the long-form example gammas dataset
     eyetrack = pd.read_csv(path.join(INPUT_PATH, input_file), sep=';')
     sns.set_style("whitegrid")
@@ -186,7 +302,7 @@ def draw_timeline_per_snippet_brightness(input_file, output_file, only_comprehen
     ax.xaxis.grid(False)
 
     # get the average pupil dilation of an entire snippet
-    eyetrack = eyetrack.groupby(['subject','condition','snippet'], as_index=False)['pupil_dilation'].mean() \
+    eyetrack = eyetrack.groupby(['subject','condition','snippet'], as_index=False)['pupil_dilation'].mean()
 
     # optionally only select snippets conditions
     if only_comprehension:
@@ -194,15 +310,37 @@ def draw_timeline_per_snippet_brightness(input_file, output_file, only_comprehen
         eyetrack = eyetrack[~eyetrack['snippet'].str.contains("DecTime")]
         eyetrack = eyetrack[~eyetrack['snippet'].str.contains("Rest")]
 
-    eyetrack['brightness'] = eyetrack.apply(lambda row: get_brightness(row), axis=1)
+    if sum_comprehension:
+        eyetrack['condition'] = eyetrack['condition'].replace({'Compr_BU': 'Comprehension', 'Compr_TD_B': 'Comprehension', 'Compr_TD_U': 'Comprehension', 'Compr_TD_N': 'Comprehension', 'Syntax': 'Comprehension'})
+        eyetrack['condition'] = eyetrack['condition'].replace({'Comprehension': 'Code Display'})
 
-    eyetrack_plot = sns.lmplot(data=eyetrack, x="brightness", y="pupil_dilation", hue="condition", ci=None, legend_out=False)
+    eyetrack = eyetrack.rename(columns={'condition': 'Task Condition'})
+
+    eyetrack['brightness'] = eyetrack.apply(lambda row: get_brightness(row, False), axis=1)
+
+    eyetrack_plot = sns.lmplot(data=eyetrack, x="brightness", y="pupil_dilation", hue="Task Condition", ci=None, fit_reg=True, legend_out=False)
+
+    if False:
+        y = eyetrack["pupil_dilation"]
+        x = eyetrack["brightness"]
+
+        for i in x:
+            print(i)
+
+        print("----")
+
+        for i in y:
+            print(i)
 
     # remove lines around graph
     sns.despine(trim=True)
-    eyetrack_plot.set(ylim=(900,2000))
-    eyetrack_plot.set(xlabel='Code Image Brightness')
-    eyetrack_plot.set(ylabel='Pupil Dilation as area')
+    eyetrack_plot.set(ylim=(1000,1900))
+    eyetrack_plot.set(xlabel='Image Brightness of Code Snippet')
+    eyetrack_plot.set(ylabel='Pupil Dilation Area (Arbitrary Unit)')
+
+    # once for each algorithm (fast, or slow)
+    #plt.text(0.18, 1350, 'r²=0.18', fontsize=10)
+    plt.text(4.8, 1350, 'r²=0.18', fontsize=10)
 
     # save output as file, in a high resolution
     fig = eyetrack_plot.fig
