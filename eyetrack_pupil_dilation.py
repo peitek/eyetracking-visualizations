@@ -123,9 +123,16 @@ def draw_corrected_timeline_over_time_all_participants(input_file, output_file, 
     if limited:
         eyetrack = eyetrack[:650]
 
+    # mean normalization
     eyetrack['pupil_dilation'] = (eyetrack['pupil_dilation'] - eyetrack['pupil_dilation'].mean()) / eyetrack['pupil_dilation'].std()
     eyetrack['gaze_x'] = (eyetrack['gaze_x'] - eyetrack['gaze_x'].mean()) / eyetrack['gaze_x'].std()
     eyetrack['gaze_y'] = (eyetrack['gaze_y'] - eyetrack['gaze_y'].mean()) / eyetrack['gaze_y'].std()
+
+    # min-max normalization
+    #eyetrack['pupil_dilation'] = (eyetrack['pupil_dilation'] - eyetrack['pupil_dilation'].min()) / (eyetrack['pupil_dilation'].max() - eyetrack['pupil_dilation'].min())
+    #eyetrack['gaze_x'] = (eyetrack['gaze_x'] - eyetrack['gaze_x'].min()) / (eyetrack['gaze_x'].max() - eyetrack['gaze_x'].min())
+    #eyetrack['gaze_y'] = (eyetrack['gaze_y'] - eyetrack['gaze_y'].min()) / (eyetrack['gaze_y'].max() - eyetrack['gaze_y'].min())
+
     eyetrack['pupil_dilation_corrected'] = eyetrack.apply(lambda row: get_corrected_pupil_dilation(row), axis=1)
 
     eyetrack_tsplot = sns.tsplot(data=eyetrack, time="time", unit="subject", value="pupil_dilation", color=colors[0], legend=True)
@@ -293,6 +300,59 @@ def calculate_brightness(image_path):
     return 1 if brightness == 255 else (brightness / scale) * 10
 
 
+def calculate_blink_rate(row):
+    amount_participants = 8
+
+    blink_rate = (row["amount_blinks"] / amount_participants) * 2
+    return blink_rate
+
+
+def analyze_blink_rates_per_snippet(input_file):
+    eyetrack = pd.read_csv(path.join(INPUT_PATH, input_file), sep=';')
+
+    eyetrack = eyetrack.groupby(['condition','snippet'], as_index=False)['blink_rate'].count()
+
+    eyetrack = eyetrack.rename(columns={'blink_rate': 'amount_blinks'})
+
+    eyetrack = eyetrack[~eyetrack['snippet'].str.contains("D2")]
+    eyetrack = eyetrack[~eyetrack['snippet'].str.contains("DecTime")]
+    eyetrack = eyetrack[~eyetrack['snippet'].str.contains("Rest")]
+
+    eyetrack['blink_rate'] = eyetrack.apply(lambda row: calculate_blink_rate(row), axis=1)
+
+    print(eyetrack.to_string())
+
+
+def analyze_pupil_dilation_per_snippet(input_file):
+    eyetrack = pd.read_csv(path.join(INPUT_PATH, input_file), sep=';')
+
+    eyetrack = eyetrack.groupby(['subject','condition','snippet'], as_index=False)['pupil_dilation'].mean()
+
+    eyetrack = eyetrack[~eyetrack['snippet'].str.contains("D2")]
+    eyetrack = eyetrack[~eyetrack['snippet'].str.contains("DecTime")]
+    eyetrack = eyetrack[~eyetrack['snippet'].str.contains("Rest")]
+
+    eyetrack['brightness'] = eyetrack.apply(lambda row: get_brightness(row, True), axis=1)
+
+    print(eyetrack.to_string())
+
+    pass
+
+
+def analyze_pupil_dilation_per_condition(input_file):
+    eyetrack = pd.read_csv(path.join(INPUT_PATH, input_file), sep=';')
+
+    eyetrack = eyetrack.groupby(['subject','condition','snippet'], as_index=False)['pupil_dilation'].mean()
+
+    eyetrack['brightness'] = eyetrack.apply(lambda row: get_brightness(row, True), axis=1)
+
+    eyetrack = eyetrack.groupby(['subject','condition'], as_index=False).mean()
+
+    print(eyetrack.to_string())
+
+    pass
+
+
 def draw_timeline_per_snippet_brightness(input_file, output_file, only_comprehension=False, sum_comprehension=False):
     # Load the long-form example gammas dataset
     eyetrack = pd.read_csv(path.join(INPUT_PATH, input_file), sep=';')
@@ -316,9 +376,9 @@ def draw_timeline_per_snippet_brightness(input_file, output_file, only_comprehen
 
     eyetrack = eyetrack.rename(columns={'condition': 'Task Condition'})
 
-    eyetrack['brightness'] = eyetrack.apply(lambda row: get_brightness(row, False), axis=1)
+    eyetrack['brightness'] = eyetrack.apply(lambda row: get_brightness(row, True), axis=1)
 
-    eyetrack_plot = sns.lmplot(data=eyetrack, x="brightness", y="pupil_dilation", hue="Task Condition", ci=None, fit_reg=True, legend_out=False)
+    eyetrack_plot = sns.lmplot(data=eyetrack, x="brightness", y="pupil_dilation", hue="Task Condition", ci=None, fit_reg=True, aspect=2, legend_out=False)
 
     if False:
         y = eyetrack["pupil_dilation"]
@@ -333,7 +393,7 @@ def draw_timeline_per_snippet_brightness(input_file, output_file, only_comprehen
             print(i)
 
     # remove lines around graph
-    sns.despine(trim=True)
+    #sns.despine(trim=True)
     eyetrack_plot.set(ylim=(1000,1900))
     eyetrack_plot.set(xlabel='Image Brightness of Code Snippet')
     eyetrack_plot.set(ylabel='Pupil Dilation Area (Arbitrary Unit)')

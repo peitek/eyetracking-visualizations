@@ -24,6 +24,11 @@ import response_times_condition_boxplot as response_times
 #eyetrack_pupil_dilation.draw_timeline_per_snippet_brightness('pupil_dilation_snippet.csv', 'eyetrack_pupil_dilation_snippet_brightness_complete', False)
 #eyetrack_pupil_dilation.draw_timeline_per_snippet_brightness('pupil_dilation_snippet.csv', 'eyetrack_pupil_dilation_snippet_brightness_compr', True)
 
+#eyetrack_pupil_dilation.analyze_pupil_dilation_per_condition('pupil_dilation_snippet.csv')
+#eyetrack_pupil_dilation.analyze_pupil_dilation_per_snippet('pupil_dilation_snippet.csv')
+
+eyetrack_pupil_dilation.analyze_blink_rates_per_snippet('blink_rate_snippet_participant.csv')
+
 #eyetrack_pupil_dilation.draw_timeline_per_snippet_brightness('pupil_dilation_snippet.csv', 'eyetrack_pupil_dilation_snippet_brightness_compr_sum', True, True)
 
 #eyetrack_pupil_dilation.draw_timeline_per_snippet_compare('pupil_dilation_snippet.csv', 'eyetrack_pupil_dilation_snippet_compare_arrayavg', 'arrayAverageTD_B.png', 'beebtBurebzrTD_N.png')
@@ -39,7 +44,7 @@ import response_times_condition_boxplot as response_times
 
 #eyetrack_pupil_dilation.draw_timeline_over_time_all_participants('pupil_dilation_gaze_pos_time_sec.csv', 'eyetrack_pupil_dilation_time_sec', True, "ks01", True)
 
-eyetrack_pupil_dilation.draw_corrected_timeline_over_time_all_participants('pupil_dilation_gaze_pos_time_sec.csv', 'eyetrack_pupil_dilation_time_sec', True, "ks01", True)
+#eyetrack_pupil_dilation.draw_corrected_timeline_over_time_all_participants('pupil_dilation_gaze_pos_time_sec.csv', 'eyetrack_pupil_dilation_time_sec', True, "ks01", True)
 
 if False:
     # AOI Analysis
