@@ -5,8 +5,7 @@ import numpy as np
 from scipy import stats
 from os import path
 
-INPUT_PATH = 'input/'
-OUTPUT_PATH = 'output/'
+from config import INPUT_PATH, OUTPUT_PATH
 
 
 def draw_plot(input_file, output_file):

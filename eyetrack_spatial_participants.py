@@ -4,8 +4,7 @@ import seaborn as sns
 from scipy import stats
 from os import path
 
-INPUT_PATH = 'input/'
-OUTPUT_PATH = 'output/'
+from config import INPUT_PATH, OUTPUT_PATH
 
 
 def draw_eyetrack_spatial_error_plot(input_file, output_file, individual_lines=False, trend_line=True, individual_axis=False):

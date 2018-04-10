@@ -10,7 +10,6 @@ OUTPUT_PATH = 'output/'
 def draw_response_times_plot(input_file, output_file):
     sns.set_style("ticks", {"'xtick.major.size'": "0"})
 
-    # Load the example tips dataset
     response_times = pd.read_csv(path.join(INPUT_PATH, input_file), sep=';')
 
     # colors
@@ -30,11 +29,6 @@ def draw_response_times_plot(input_file, output_file):
     # remove lines around graph
     sns.despine(bottom=True, trim=True)
 
-    #plt.show(boxplot)
-
     # save output as file, in a high resolution
     fig = boxplot.get_figure()
     fig.savefig(path.join(OUTPUT_PATH, output_file), dpi=300, transparent=False)
-
-
-

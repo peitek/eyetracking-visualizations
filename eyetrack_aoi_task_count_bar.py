@@ -4,15 +4,13 @@ import seaborn as sns
 from scipy import stats
 from os import path
 
-INPUT_PATH = 'input/'
-OUTPUT_PATH = 'output/'
+from config import INPUT_PATH, OUTPUT_PATH
 
 
-def printColor(param):
+def print_color_in_rgb(param):
     print("R: ", 256*param[0])
     print("G: ", 256*param[1])
     print("B: ", 256*param[2])
-
 
 
 def draw_plot(input_file, output_file):
@@ -26,10 +24,9 @@ def draw_plot(input_file, output_file):
 
     colors = sns.color_palette("RdBu_r", 7)
 
-    printColor(colors[-1])
-    printColor(colors[-3])
-    printColor(colors[0])
-
+    print_color_in_rgb(colors[-1])
+    print_color_in_rgb(colors[-3])
+    print_color_in_rgb(colors[0])
 
     sns.barplot(y="aoi_50px", x="snippet", data=aoi_participant_data, label="Outer AOI (50px)", color=colors[-1])
     sns.barplot(y="aoi_25px", x="snippet", data=aoi_participant_data, label="Outer AOI (25px)", color=colors[-3])

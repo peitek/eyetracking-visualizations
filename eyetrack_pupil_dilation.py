@@ -1,17 +1,12 @@
 import matplotlib.pyplot as plt
 import pandas as pd
 import seaborn as sns
-import numpy as np
-from scipy import stats, random, math
+from scipy import stats
 from os import path
 from PIL import Image
-import statsmodels.api as sm
 
-import luminosity
-
-IMAGE_PATH = 'C:/Users/npeitek/Documents/OgamaExperiments/fMRI_Eyetracking_Mar_13/SlideResources'
-INPUT_PATH = 'C:/Users/npeitek/Documents/GitHub/EyeLinkOgamaConnector/output/'
-OUTPUT_PATH = 'output/'
+from helper import luminosity
+from config import IMAGE_PATH, INPUT_PATH, OUTPUT_PATH
 
 
 def draw_timeline_over_time_all_participants(input_file, output_file, with_gaze=False, select_participant=None, limited=False):
@@ -50,9 +45,9 @@ def draw_timeline_over_time_all_participants(input_file, output_file, with_gaze=
         eyetrack_tsplot = sns.tsplot(data=eyetrack, time="time", unit="subject", value="gaze_y", color=colors[-2])
 
         import eyetrack_aoi_task_count_bar
-        eyetrack_aoi_task_count_bar.printColor(colors[0])
-        eyetrack_aoi_task_count_bar.printColor(colors[-1])
-        eyetrack_aoi_task_count_bar.printColor(colors[-2])
+        eyetrack_aoi_task_count_bar.print_color_in_rgb(colors[0])
+        eyetrack_aoi_task_count_bar.print_color_in_rgb(colors[-1])
+        eyetrack_aoi_task_count_bar.print_color_in_rgb(colors[-2])
 
     xpos = 0
     if limited:
@@ -86,6 +81,8 @@ def draw_timeline_over_time_all_participants(input_file, output_file, with_gaze=
 
 
 def get_corrected_pupil_dilation(row):
+    # this corrects the pupil dilation based on Brisson et al. algorithm
+    # however, it seems to be counterproductive for our setup. it may be caused to do the flipped camera position
     pupil_dilation = row['pupil_dilation']
     gaze_x = row['gaze_x']
     gaze_y = row['gaze_y']
@@ -94,7 +91,7 @@ def get_corrected_pupil_dilation(row):
     return pupil_dilation_corrected
 
 
-def draw_corrected_timeline_over_time_all_participants(input_file, output_file, with_gaze=False, select_participant=None, limited=False):
+def draw_corrected_timeline_over_time_all_participants(input_file, output_file, with_gaze=False, select_participant=None, limited=False, corrected_normalized=False):
     global eyetrack
     # Load the long-form example gammas dataset
     eyetrack = pd.read_csv(path.join(INPUT_PATH, input_file), sep=';')
@@ -121,32 +118,18 @@ def draw_corrected_timeline_over_time_all_participants(input_file, output_file, 
         output_file += '.png'
 
     if limited:
-        eyetrack = eyetrack[:650]
+        eyetrack = eyetrack[:642]
 
     # mean normalization
-    eyetrack['pupil_dilation'] = (eyetrack['pupil_dilation'] - eyetrack['pupil_dilation'].mean()) / eyetrack['pupil_dilation'].std()
-    eyetrack['gaze_x'] = (eyetrack['gaze_x'] - eyetrack['gaze_x'].mean()) / eyetrack['gaze_x'].std()
-    eyetrack['gaze_y'] = (eyetrack['gaze_y'] - eyetrack['gaze_y'].mean()) / eyetrack['gaze_y'].std()
+    if corrected_normalized:
+        eyetrack['pupil_dilation'] = (eyetrack['pupil_dilation'] - eyetrack['pupil_dilation'].mean()) / eyetrack['pupil_dilation'].std()
+        eyetrack['gaze_x'] = (eyetrack['gaze_x'] - eyetrack['gaze_x'].mean()) / eyetrack['gaze_x'].std()
+        eyetrack['gaze_y'] = (eyetrack['gaze_y'] - eyetrack['gaze_y'].mean()) / eyetrack['gaze_y'].std()
 
     # min-max normalization
     #eyetrack['pupil_dilation'] = (eyetrack['pupil_dilation'] - eyetrack['pupil_dilation'].min()) / (eyetrack['pupil_dilation'].max() - eyetrack['pupil_dilation'].min())
     #eyetrack['gaze_x'] = (eyetrack['gaze_x'] - eyetrack['gaze_x'].min()) / (eyetrack['gaze_x'].max() - eyetrack['gaze_x'].min())
     #eyetrack['gaze_y'] = (eyetrack['gaze_y'] - eyetrack['gaze_y'].min()) / (eyetrack['gaze_y'].max() - eyetrack['gaze_y'].min())
-
-    eyetrack['pupil_dilation_corrected'] = eyetrack.apply(lambda row: get_corrected_pupil_dilation(row), axis=1)
-
-    eyetrack_tsplot = sns.tsplot(data=eyetrack, time="time", unit="subject", value="pupil_dilation", color=colors[0], legend=True)
-    eyetrack_tsplot = sns.tsplot(data=eyetrack, time="time", unit="subject", value="pupil_dilation_corrected", color=colors[1], legend=True)
-
-    if False and with_gaze:
-        eyetrack_tsplot = sns.tsplot(data=eyetrack, time="time", unit="subject", value="gaze_x", color=colors[-1])
-        eyetrack_tsplot = sns.tsplot(data=eyetrack, time="time", unit="subject", value="gaze_y", color=colors[-2])
-
-        import eyetrack_aoi_task_count_bar
-        eyetrack_aoi_task_count_bar.printColor(colors[0])
-        eyetrack_aoi_task_count_bar.printColor(colors[1])
-        eyetrack_aoi_task_count_bar.printColor(colors[-1])
-        eyetrack_aoi_task_count_bar.printColor(colors[-2])
 
     xpos = 0
     if limited:
@@ -167,8 +150,24 @@ def draw_corrected_timeline_over_time_all_participants(input_file, output_file, 
         plt.text(xpos - 180, ypos, 'Rest', fontsize=14)
         plt.axvline(x=xpos, color=colors[2])
 
+    eyetrack_tsplot = sns.tsplot(data=eyetrack, time="time", unit="subject", value="pupil_dilation", color=colors[0], legend=True)
+
+    if corrected_normalized:
+        eyetrack['pupil_dilation_corrected'] = eyetrack.apply(lambda row: get_corrected_pupil_dilation(row), axis=1)
+        eyetrack_tsplot = sns.tsplot(data=eyetrack, time="time", unit="subject", value="pupil_dilation_corrected", color=colors[1], legend=True)
+
+    if with_gaze:
+        eyetrack_tsplot = sns.tsplot(data=eyetrack, time="time", unit="subject", value="gaze_x", color=colors[-1])
+        eyetrack_tsplot = sns.tsplot(data=eyetrack, time="time", unit="subject", value="gaze_y", color=colors[-2])
+
+        import eyetrack_aoi_task_count_bar
+        eyetrack_aoi_task_count_bar.print_color_in_rgb(colors[0])
+        eyetrack_aoi_task_count_bar.print_color_in_rgb(colors[1])
+        eyetrack_aoi_task_count_bar.print_color_in_rgb(colors[-1])
+        eyetrack_aoi_task_count_bar.print_color_in_rgb(colors[-2])
+
     eyetrack_tsplot.set(xlabel='Time in 10th of second')
-    eyetrack_tsplot.set(ylabel='Normalized Pupil Dilation')
+    eyetrack_tsplot.set(ylabel='Pupil Dilation | Gaze Location')
 
     # remove lines around graph
     sns.despine(trim=True)
@@ -184,7 +183,7 @@ def draw_timeline_per_conditions(input_file, output_file, filter=False, particip
     eyetrack = pd.read_csv(path.join(INPUT_PATH, input_file), sep=';')
     sns.set_style("whitegrid")
     colors = sns.color_palette("BrBG", 7)
-    f, ax = plt.subplots(figsize=(10, 6))
+    f, ax = plt.subplots(figsize=(10, 5))
     ax.xaxis.grid(False)
 
     if filter:
@@ -266,6 +265,9 @@ def draw_timeline_per_snippet_compare(input_file, output_file, snippet1, snippet
 def get_brightness(row, quick_and_dirty=False):
     snippet = row['snippet']
 
+    if not isinstance(snippet, str):
+        snippet = row['snippet'].values[0]
+
     if 'DecTime' in snippet:
         snippet = snippet.replace('DecTime', 'dec_time_')
         snippet += '.png'
@@ -300,29 +302,6 @@ def calculate_brightness(image_path):
     return 1 if brightness == 255 else (brightness / scale) * 10
 
 
-def calculate_blink_rate(row):
-    amount_participants = 8
-
-    blink_rate = (row["amount_blinks"] / amount_participants) * 2
-    return blink_rate
-
-
-def analyze_blink_rates_per_snippet(input_file):
-    eyetrack = pd.read_csv(path.join(INPUT_PATH, input_file), sep=';')
-
-    eyetrack = eyetrack.groupby(['condition','snippet'], as_index=False)['blink_rate'].count()
-
-    eyetrack = eyetrack.rename(columns={'blink_rate': 'amount_blinks'})
-
-    eyetrack = eyetrack[~eyetrack['snippet'].str.contains("D2")]
-    eyetrack = eyetrack[~eyetrack['snippet'].str.contains("DecTime")]
-    eyetrack = eyetrack[~eyetrack['snippet'].str.contains("Rest")]
-
-    eyetrack['blink_rate'] = eyetrack.apply(lambda row: calculate_blink_rate(row), axis=1)
-
-    print(eyetrack.to_string())
-
-
 def analyze_pupil_dilation_per_snippet(input_file):
     eyetrack = pd.read_csv(path.join(INPUT_PATH, input_file), sep=';')
 
@@ -339,14 +318,50 @@ def analyze_pupil_dilation_per_snippet(input_file):
     pass
 
 
-def analyze_pupil_dilation_per_condition(input_file):
+def normalize_analyze_pupil_dilation_per_condition(input_file):
     eyetrack = pd.read_csv(path.join(INPUT_PATH, input_file), sep=';')
 
-    eyetrack = eyetrack.groupby(['subject','condition','snippet'], as_index=False)['pupil_dilation'].mean()
+    # normalize pupil dilation for each participant separately
+    participants = eyetrack["subject"].unique()
 
-    eyetrack['brightness'] = eyetrack.apply(lambda row: get_brightness(row, True), axis=1)
+    subsets = []
 
-    eyetrack = eyetrack.groupby(['subject','condition'], as_index=False).mean()
+    for participant in participants:
+        subset = eyetrack.loc[eyetrack['subject'] == participant]
+        subset['pupil_dilation_zscore'] = (subset['pupil_dilation'] - subset['pupil_dilation'].mean())/subset['pupil_dilation'].std(ddof=1)
+        subsets.append(subset)
+
+    eyetrack = pd.concat(subsets)
+
+    # running statistics
+    per_participant_and_condition = eyetrack.groupby(['subject', 'condition', 'snippet'], as_index=False)['pupil_dilation_zscore'].mean()
+    compr_td_b = per_participant_and_condition[per_participant_and_condition['condition'] == "Compr_TD_B"]['pupil_dilation_zscore'].tolist()
+    compr_td_n = per_participant_and_condition[per_participant_and_condition['condition'] == "Compr_TD_N"]['pupil_dilation_zscore'].tolist()
+
+    print(compr_td_b)
+    print(compr_td_n)
+
+    # run overall mean/std
+    eyetrack = eyetrack.groupby(['condition'], as_index=False).agg({'pupil_dilation_zscore': ['mean', 'std']})
+    print(eyetrack.to_string())
+
+    pass
+
+
+def analyze_pupil_dilation_per_condition(input_file, with_brightness=False, quick_and_dirty_brightness=True):
+    eyetrack = pd.read_csv(path.join(INPUT_PATH, input_file), sep=';')
+
+    if with_brightness:
+        eyetrack = eyetrack.groupby(['subject', 'condition', 'snippet'], as_index=False).agg(
+            {'pupil_dilation': ['mean', 'std']})
+
+        eyetrack['brightness'] = eyetrack.apply(lambda row: get_brightness(row, quick_and_dirty_brightness), axis=1)
+
+        #eyetrack = eyetrack.groupby(['condition', 'snippet'], as_index=False).mean()
+        eyetrack = eyetrack.groupby(['condition'], as_index=False).mean()
+    else:
+        eyetrack = eyetrack.groupby(['condition'], as_index=False).agg(
+            {'pupil_dilation': ['mean', 'std']})
 
     print(eyetrack.to_string())
 
@@ -378,7 +393,7 @@ def draw_timeline_per_snippet_brightness(input_file, output_file, only_comprehen
 
     eyetrack['brightness'] = eyetrack.apply(lambda row: get_brightness(row, True), axis=1)
 
-    eyetrack_plot = sns.lmplot(data=eyetrack, x="brightness", y="pupil_dilation", hue="Task Condition", ci=None, fit_reg=True, aspect=2, legend_out=False)
+    eyetrack_plot = sns.lmplot(data=eyetrack, x="brightness", y="pupil_dilation", hue="Task Condition", ci=None, fit_reg=True, aspect=2.5, legend_out=False)
 
     if False:
         y = eyetrack["pupil_dilation"]
