@@ -1,6 +1,7 @@
 import matplotlib.pyplot as plt
 import pandas as pd
 import seaborn as sns
+import scipy
 from scipy import stats
 from os import path
 from PIL import Image
@@ -321,17 +322,7 @@ def analyze_pupil_dilation_per_snippet(input_file):
 def normalize_analyze_pupil_dilation_per_condition(input_file):
     eyetrack = pd.read_csv(path.join(INPUT_PATH, input_file), sep=';')
 
-    # normalize pupil dilation for each participant separately
-    participants = eyetrack["subject"].unique()
-
-    subsets = []
-
-    for participant in participants:
-        subset = eyetrack.loc[eyetrack['subject'] == participant]
-        subset['pupil_dilation_zscore'] = (subset['pupil_dilation'] - subset['pupil_dilation'].mean())/subset['pupil_dilation'].std(ddof=1)
-        subsets.append(subset)
-
-    eyetrack = pd.concat(subsets)
+    eyetrack = standardize_eyetrack_dataframe(eyetrack)
 
     # running statistics
     per_participant_and_condition = eyetrack.groupby(['subject', 'condition', 'snippet'], as_index=False)['pupil_dilation_zscore'].mean()
@@ -348,12 +339,26 @@ def normalize_analyze_pupil_dilation_per_condition(input_file):
     pass
 
 
+def standardize_eyetrack_dataframe(eyetrack):
+    # normalize pupil dilation for each participant separately
+    participants = eyetrack["subject"].unique()
+    subsets = []
+    for participant in participants:
+        subset = eyetrack.loc[eyetrack['subject'] == participant]
+        subset['pupil_dilation_zscore'] = (subset['pupil_dilation'] - subset['pupil_dilation'].mean()) / subset['pupil_dilation'].std(ddof=1)
+        subsets.append(subset)
+    eyetrack = pd.concat(subsets)
+    return eyetrack
+
+
 def analyze_pupil_dilation_per_condition(input_file, with_brightness=False, quick_and_dirty_brightness=True):
     eyetrack = pd.read_csv(path.join(INPUT_PATH, input_file), sep=';')
 
+    eyetrack = standardize_eyetrack_dataframe(eyetrack)
+
     if with_brightness:
         eyetrack = eyetrack.groupby(['subject', 'condition', 'snippet'], as_index=False).agg(
-            {'pupil_dilation': ['mean', 'std']})
+            {'pupil_dilation_zscore': ['mean', 'std']})
 
         eyetrack['brightness'] = eyetrack.apply(lambda row: get_brightness(row, quick_and_dirty_brightness), axis=1)
 
@@ -361,7 +366,7 @@ def analyze_pupil_dilation_per_condition(input_file, with_brightness=False, quic
         eyetrack = eyetrack.groupby(['condition'], as_index=False).mean()
     else:
         eyetrack = eyetrack.groupby(['condition'], as_index=False).agg(
-            {'pupil_dilation': ['mean', 'std']})
+            {'pupil_dilation_zscore': ['mean', 'std']})
 
     print(eyetrack.to_string())
 
@@ -376,8 +381,10 @@ def draw_timeline_per_snippet_brightness(input_file, output_file, only_comprehen
     f, ax = plt.subplots(figsize=(10, 10))
     ax.xaxis.grid(False)
 
+    eyetrack = standardize_eyetrack_dataframe(eyetrack)
+
     # get the average pupil dilation of an entire snippet
-    eyetrack = eyetrack.groupby(['subject','condition','snippet'], as_index=False)['pupil_dilation'].mean()
+    eyetrack = eyetrack.groupby(['condition','snippet'], as_index=False)['pupil_dilation_zscore'].mean()
 
     # optionally only select snippets conditions
     if only_comprehension:
@@ -393,7 +400,7 @@ def draw_timeline_per_snippet_brightness(input_file, output_file, only_comprehen
 
     eyetrack['brightness'] = eyetrack.apply(lambda row: get_brightness(row, True), axis=1)
 
-    eyetrack_plot = sns.lmplot(data=eyetrack, x="brightness", y="pupil_dilation", hue="Task Condition", ci=None, fit_reg=True, aspect=2.5, legend_out=False)
+    eyetrack_plot = sns.lmplot(data=eyetrack, x="brightness", y="pupil_dilation_zscore", hue="Task Condition", ci=None, fit_reg=True, aspect=2.5, legend_out=False)
 
     if False:
         y = eyetrack["pupil_dilation"]
@@ -409,13 +416,15 @@ def draw_timeline_per_snippet_brightness(input_file, output_file, only_comprehen
 
     # remove lines around graph
     #sns.despine(trim=True)
-    eyetrack_plot.set(ylim=(1000,1900))
+    #eyetrack_plot.set(ylim=(1000,1900))
     eyetrack_plot.set(xlabel='Image Brightness of Code Snippet')
-    eyetrack_plot.set(ylabel='Pupil Dilation Area (Arbitrary Unit)')
+    eyetrack_plot.set(ylabel='Pupil Dilation (Standardized)')
 
     # once for each algorithm (fast, or slow)
     #plt.text(0.18, 1350, 'r²=0.18', fontsize=10)
-    plt.text(4.8, 1350, 'r²=0.18', fontsize=10)
+    slope, intercept, r_value, p_value, std_err = scipy.stats.linregress(eyetrack['brightness'], eyetrack['pupil_dilation_zscore'])
+
+    plt.text(0.19, -0.95, 'r²=0.64', fontsize=10)
 
     # save output as file, in a high resolution
     fig = eyetrack_plot.fig

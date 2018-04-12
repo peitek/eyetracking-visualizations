@@ -10,7 +10,6 @@ import response_times_condition_boxplot as response_times
 
 # TODO think about changing the output to PDF or SVG!
 
-
 if False:
     # Pupil dilation per condition/snippet
     eyetrack_pupil_dilation.draw_timeline_per_conditions('pupil_dilation_condition.csv', 'eyetrack_pupil_dilation_condition_filtered', True)
@@ -34,7 +33,7 @@ if False:
     # Pupil dilation timelines
     eyetrack_pupil_dilation.draw_timeline_over_time_all_participants('pupil_dilation_time_sec.csv', 'eyetrack_pupil_dilation_time_sec.png')
 
-    eyetrack_pupil_dilation.draw_timeline_per_snippet_brightness('pupil_dilation_snippet.csv', 'eyetrack_pupil_dilation_snippet_brightness_compr_sum', True, True)
+    eyetrack_pupil_dilation.draw_timeline_per_snippet_brightness('pupil_dilation_snippet_participant.csv', 'eyetrack_pupil_dilation_snippet_brightness_compr_sum', True, True)
 
     eyetrack_pupil_dilation.draw_timeline_per_snippet_compare('pupil_dilation_snippet.csv', 'eyetrack_pupil_dilation_snippet_compare_arrayavg', 'arrayAverageTD_B.png', 'beebtBurebzrTD_N.png')
     eyetrack_pupil_dilation.draw_timeline_per_snippet_compare('pupil_dilation_snippet.csv', 'eyetrack_pupil_dilation_snippet_compare_power', 'powerTD_B.png', 'buycpTD_N.png')
