@@ -14,6 +14,7 @@ def draw_timeline_over_time_all_participants(input_file, output_file, with_gaze=
     global eyetrack
     # Load the long-form example gammas dataset
     eyetrack = pd.read_csv(path.join(INPUT_PATH, input_file), sep=';')
+    sns.set(font_scale=1.20)
     sns.set_style("whitegrid")
     colors = sns.color_palette("BrBG", 7)
 
@@ -51,12 +52,14 @@ def draw_timeline_over_time_all_participants(input_file, output_file, with_gaze=
         eyetrack_aoi_task_count_bar.print_color_in_rgb(colors[-2])
 
     xpos = 0
+    xlimit = 25
     if limited:
         ypos = 2300
+        xlimit = 1
     else:
         ypos = 0
 
-    for i in range(25):
+    for i in range(xlimit):
         xpos += 320.05
         plt.text(xpos-300, ypos, 'Comprehension', fontsize=14)
         plt.axvline(x=xpos, color=colors[2])
@@ -69,8 +72,8 @@ def draw_timeline_over_time_all_participants(input_file, output_file, with_gaze=
         plt.text(xpos - 180, ypos, 'Rest', fontsize=14)
         plt.axvline(x=xpos, color=colors[2])
 
-    eyetrack_tsplot.set(xlabel='Time in 10th of second')
-    eyetrack_tsplot.set(ylabel='Pupil Dilation as area | Gaze Pos')
+    eyetrack_tsplot.set(xlabel='Time in 10th of Second')
+    eyetrack_tsplot.set(ylabel='Pupil Dilation as Area | Gaze Pos')
 
     # remove lines around graph
     sns.despine(trim=True)
@@ -182,9 +185,10 @@ def draw_corrected_timeline_over_time_all_participants(input_file, output_file, 
 def draw_timeline_per_conditions(input_file, output_file, filter=False, participant=None):
     # Load the long-form example gammas dataset
     eyetrack = pd.read_csv(path.join(INPUT_PATH, input_file), sep=';')
+    sns.set(font_scale=1.35)
     sns.set_style("whitegrid")
     colors = sns.color_palette("BrBG", 7)
-    f, ax = plt.subplots(figsize=(10, 5))
+    f, ax = plt.subplots(figsize=(12, 5))
     ax.xaxis.grid(False)
 
     if filter:
@@ -376,6 +380,7 @@ def analyze_pupil_dilation_per_condition(input_file, with_brightness=False, quic
 def draw_timeline_per_snippet_brightness(input_file, output_file, only_comprehension=False, sum_comprehension=False):
     # Load the long-form example gammas dataset
     eyetrack = pd.read_csv(path.join(INPUT_PATH, input_file), sep=';')
+    sns.set(font_scale=1.6)
     sns.set_style("whitegrid")
     colors = sns.color_palette("BrBG", 7)
     f, ax = plt.subplots(figsize=(10, 10))
@@ -400,7 +405,7 @@ def draw_timeline_per_snippet_brightness(input_file, output_file, only_comprehen
 
     eyetrack['brightness'] = eyetrack.apply(lambda row: get_brightness(row, True), axis=1)
 
-    eyetrack_plot = sns.lmplot(data=eyetrack, x="brightness", y="pupil_dilation_zscore", hue="Task Condition", ci=None, fit_reg=True, aspect=2.5, legend_out=False)
+    eyetrack_plot = sns.lmplot(data=eyetrack, x="brightness", y="pupil_dilation_zscore", hue="Task Condition", ci=None, fit_reg=True, aspect=2.8, legend_out=False)
 
     if False:
         y = eyetrack["pupil_dilation"]
@@ -424,7 +429,7 @@ def draw_timeline_per_snippet_brightness(input_file, output_file, only_comprehen
     #plt.text(0.18, 1350, 'r²=0.18', fontsize=10)
     slope, intercept, r_value, p_value, std_err = scipy.stats.linregress(eyetrack['brightness'], eyetrack['pupil_dilation_zscore'])
 
-    plt.text(0.19, -0.95, 'r²=0.64', fontsize=10)
+    plt.text(0.19, -0.95, 'r²=0.64', fontsize=12)
 
     # save output as file, in a high resolution
     fig = eyetrack_plot.fig
