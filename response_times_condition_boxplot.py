@@ -3,8 +3,7 @@ import pandas as pd
 import seaborn as sns
 from os import path
 
-INPUT_PATH = 'input/'
-OUTPUT_PATH = 'output/'
+from config import INPUT_PATH, OUTPUT_PATH
 
 
 def draw_response_times_plot(input_file, output_file):
