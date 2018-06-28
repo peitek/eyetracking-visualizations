@@ -1,9 +1,11 @@
 import matplotlib.pyplot as plt
 import pandas as pd
 import seaborn as sns
+import numpy as np
 from scipy import stats
 from os import path
 
+import eyetrack_aoi_task_count_bar
 from config import INPUT_PATH, OUTPUT_PATH
 
 
@@ -11,9 +13,10 @@ def draw_eyetrack_spatial_error_plot(input_file, output_file, individual_lines=F
     global eyetrack
     # Load the long-form example gammas dataset
     eyetrack = pd.read_csv(path.join(INPUT_PATH, input_file), sep=';')
+    sns.set(font_scale=1.4)
     sns.set_style("whitegrid")
     colors = sns.color_palette("BrBG", 7)
-    f, ax = plt.subplots(figsize=(8, 3))
+    f, ax = plt.subplots(figsize=(8, 5))
     ax.xaxis.grid(False)
 
     def draw_linear_trendline_for_axis(axis, color):
@@ -34,6 +37,11 @@ def draw_eyetrack_spatial_error_plot(input_file, output_file, individual_lines=F
         'x': colors[0],
         'y': colors[-1],
     }
+
+    xpos = 17.9
+    plt.axvline(x=xpos, color=colors[2])
+
+    eyetrack_aoi_task_count_bar.print_color_in_rgb(colors[2])
 
     # Plot the response with standard error
     if individual_lines:
@@ -60,7 +68,6 @@ def draw_eyetrack_spatial_error_plot(input_file, output_file, individual_lines=F
     eyetrack_tsplot.set(ylabel='Spatial Error from Fixation Cross in Pixel')
     eyetrack_tsplot.set(xlabel='Rest Condition')
 
-
     # remove lines around graph
     sns.despine(trim=True)
     plt.tight_layout()
@@ -71,4 +78,4 @@ def draw_eyetrack_spatial_error_plot(input_file, output_file, individual_lines=F
 
     # save output as file, in a high resolution
     fig = eyetrack_tsplot.get_figure()
-    fig.savefig(path.join(OUTPUT_PATH, output_file), dpi=300, transparent=False)
+    fig.savefig(path.join(OUTPUT_PATH, output_file), dpi=300, transparent=False, bbox_inches='tight', pad_inches=0)
