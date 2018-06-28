@@ -1,7 +1,9 @@
 from PIL import Image
 import sys
 
-# Code is from: https://github.com/AnliYang/luminosity
+"""
+This class is extracted from AnliYang's project: https://github.com/AnliYang/luminosity
+"""
 
 
 def get_brightness(path):
